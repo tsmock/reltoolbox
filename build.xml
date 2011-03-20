@@ -30,9 +30,9 @@
 <project name="myPluginName" default="dist" basedir=".">
 
     <!-- enter the SVN commit message -->
-    <property name="commit.message" value="Commit message" />
+    <property name="commit.message" value="RelContext" />
     <!-- enter the *lowest* JOSM version this plugin is currently compatible with -->
-    <property name="plugin.main.version" value="" />
+    <property name="plugin.main.version" value="3835" />
 
 
     <!--
@@ -99,12 +99,13 @@
         ************************************************
     -->
             <manifest>
-                <attribute name="Author" value="..."/>
-                <attribute name="Plugin-Class" value="..."/>
+                <attribute name="Author" value="Ilya Zverev"/>
+                <attribute name="Plugin-Class" value="relcontext.RelContextPlugin"/>
                 <attribute name="Plugin-Date" value="${version.entry.commit.date}"/>
-                <attribute name="Plugin-Description" value="..."/>
-                <attribute name="Plugin-Icon" value="..."/>
-                <attribute name="Plugin-Link" value="..."/>
+                <attribute name="Plugin-Description" value="Advanced relation editing panel."/>
+                <attribute name="ru_Plugin-Description" value="Нечеловечески прекрасная панель редактирования отношений."/>
+                <attribute name="Plugin-Icon" value="images/relcontext.png"/>
+                <attribute name="Plugin-Link" value="http://google.com/"/>
                 <attribute name="Plugin-Mainversion" value="${plugin.main.version}"/>
                 <attribute name="Plugin-Version" value="${version.entry.commit.revision}"/>
             </manifest>
