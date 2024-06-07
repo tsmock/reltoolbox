@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -14,9 +15,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.openstreetmap.josm.TestUtils;
 import org.openstreetmap.josm.command.Command;
+import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Relation;
+import org.openstreetmap.josm.data.osm.RelationMember;
+import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.testutils.annotations.Projection;
 
 /**
@@ -91,4 +97,31 @@ interface RelationFixerTest {
         assertAll(relation.getMemberPrimitives().stream()
                 .map(member -> () -> assertSame(ds, member.getDataSet(), member + " does not have the same dataset as " + relation)));
     }
+
+    @ParameterizedTest
+    @MethodSource("getGoodRelations")
+    default void testGoodRelationNotFixed(Relation goodRelation) {
+        assertTrue(getInstance().isRelationGood(goodRelation));
+        final DataSet ds = goodRelation.getDataSet();
+        final RelationFixer fixer = getInstance();
+        final Command command = fixer.fixRelation(goodRelation);
+        assertNull(command);
+    }
+
+    @ParameterizedTest
+    @MethodSource("getGoodRelations")
+    default void testAddBadMember(Relation goodRelation) {
+        // regression test for #23715
+        final DataSet ds = goodRelation.getDataSet();
+        assertTrue(getInstance().isRelationGood(goodRelation));
+        Node n1 = new Node(new LatLon(2.0, 2.0));
+        Node n2 = new Node(new LatLon(2.0, 3.0));
+        Way w1 = TestUtils.newWay("", n1, n2);
+        ds.addPrimitiveRecursive(w1);
+        goodRelation.addMember(new RelationMember("", w1));
+        final RelationFixer fixer = getInstance();
+        final Command command = fixer.fixRelation(goodRelation);
+        assertNull(command);
+    }
+
 }
